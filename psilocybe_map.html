@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Psilocybe subaeruginosa Habitat Map - Greater Melbourne & Surrounds</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map('map').setView([-37.8136, 144.9631], 9); // Slight zoom out for more area
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Heatmap: [lat, lng, intensity]
+    const heatData = [
+      [-37.8677, 145.3505, 0.9],   // Olinda
+      [-37.8916, 145.3397, 0.85],  // Sherbrooke
+      [-37.9051, 145.3008, 0.8],   // Sassafras
+      [-37.9124, 145.3113, 0.75],  // Belgrave
+      [-37.7534, 144.5840, 0.7],   // Mt Macedon
+      [-37.7333, 145.6686, 0.75],  // Healesville – Yarra Valley
+      [-37.7250, 145.5080, 0.7],   // Yarra Glen
+      [-37.7590, 145.5328, 0.8],   // Warburton
+      [-37.6891, 145.3554, 0.6],   // Kinglake
+      [-37.8450, 144.9870, 0.55],  // Yarra Bend Park
+      [-37.8206, 144.9646, 0.5],   // Royal Botanic Gardens
+      [-37.7670, 145.0013, 0.5],   // Northcote
+      [-37.7997, 145.0724, 0.5],   // Kew
+      [-37.8531, 145.1466, 0.6],   // Box Hill
+      [-37.8775, 145.1187, 0.55],  // Glen Waverley
+      [-37.6970, 145.0663, 0.6],   // Bundoora
+      [-37.6910, 145.1392, 0.6],   // Eltham
+      [-37.8483, 145.1228, 0.6],   // Blackburn
+    ];
+
+    const heatLayer = L.heatLayer(heatData, {
+      radius: 25,
+      blur: 15,
+      maxZoom: 14,
+    });
+
+    // Forest habitats
+    const forestHabitat = L.layerGroup([
+      L.circleMarker([-37.8916, 145.3397], { color: "green" }).bindPopup("Sherbrooke Forest"),
+      L.circleMarker([-37.7590, 145.5328], { color: "green" }).bindPopup("Yarra Ranges – Warburton"),
+      L.circleMarker([-37.7333, 145.6686], { color: "green" }).bindPopup("Healesville Forest (Yarra Valley)"),
+      L.circleMarker([-37.6891, 145.3554], { color: "green" }).bindPopup("Kinglake National Park"),
+      L.circleMarker([-37.7534, 144.5840], { color: "green" }).bindPopup("Mt Macedon Ranges")
+    ]);
+
+    // Mulched urban areas
+    const mulchedUrban = L.layerGroup([
+      L.circleMarker([-37.6970, 145.0663], { color: "orange" }).bindPopup("Bundoora – Council Gardens"),
+      L.circleMarker([-37.7670, 145.0013], { color: "orange" }).bindPopup("Northcote Community Parks"),
+      L.circleMarker([-37.8206, 144.9646], { color: "orange" }).bindPopup("Royal Botanic Gardens"),
+      L.circleMarker([-37.8450, 144.9870], { color: "orange" }).bindPopup("Yarra Bend Park")
+    ]);
+
+    // Garden/edge habitats
+    const gardenSites = L.layerGroup([
+      L.circleMarker([-37.8531, 145.1466], { color: "purple" }).bindPopup("Box Hill Gardens"),
+      L.circleMarker([-37.8775, 145.1187], { color: "purple" }).bindPopup("Glen Waverley Bush Reserves"),
+      L.circleMarker([-37.8483, 145.1228], { color: "purple" }).bindPopup("Blackburn Urban Bushland"),
+      L.circleMarker([-37.7997, 145.0724], { color: "purple" }).bindPopup("Kew Reserve")
+    ]);
+
+    // Markers
+    const pinLayer = L.layerGroup([
+      L.marker([-37.8677, 145.3505]).bindPopup("Olinda – High Moisture Forest"),
+      L.marker([-37.9051, 145.3008]).bindPopup("Sassafras – Garden Borders"),
+      L.marker([-37.7333, 145.6686]).bindPopup("Healesville – Yarra Valley Woodlands"),
+      L.marker([-37.7250, 145.5080]).bindPopup("Yarra Glen – Forest Edge Mulch Beds"),
+      L.marker([-37.6910, 145.1392]).bindPopup("Eltham Bush Reserves"),
+      L.marker([-37.7534, 144.5840]).bindPopup("Mt Macedon National Park"),
+    ]);
+
+    heatLayer.addTo(map);
+    forestHabitat.addTo(map);
+    mulchedUrban.addTo(map);
+    gardenSites.addTo(map);
+    pinLayer.addTo(map);
+
+    const overlays = {
+      "Likelihood Heatmap": heatLayer,
+      "Forest Habitat": forestHabitat,
+      "Mulched Urban Areas": mulchedUrban,
+      "Garden/Community Sites": gardenSites,
+      "Pinpointed Locations": pinLayer
+    };
+
+    L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+  </script>
+</body>
+</html>
